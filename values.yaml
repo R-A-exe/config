@@ -260,7 +260,10 @@ enableBuiltInSecretEnvVars:
 #    * key (can be templated) is the name of the secret that will be created
 #    * value: an object with the standard 'data' or 'stringData' key (or both).
 #          The value associated with those keys must be a string (can be templated)
-extraSecrets: {}
+extraSecrets:
+  airflow-ssh-secret:
+    data: |
+      gitSshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC5vA0Jg2g5ZAYqz55RFBr0cA8MDE7lRVEN8rRy3wqH17nkNCur8/LNw7oT/o+MA6ldEJkwOqS0VK3FBbicwsna1NUDz1yzaHBeQchC1+L7y7q5R2qEjxmccNS2/w8Y/vZ7Ulo4jJCQ9KRUf9xdsqwSm0XAec2YcZtMG5BC6QF8/RgO27bAcCQH6x2CcfSCJeYKlrUrNjV2UGX8FT+igK6KU3ZKjLQLwq2ozdMxmmMtc1Ld9Fpho8QSjUof9dh0vzlVg4aRaWatCkcowt4vYe7MPUn4w2lqe0IAoFr/kh8V0js/cEHjEZ4sM4TvJBO1xYQk0JU6LRu4fG/HKdxb4M9IkIgiut3tTBkWp0JH09Rzn9d6Rlxv/4r/pGnBShiWJ2SkK7ROyPE+oASFUQXZd7Sc9MC0eE4OnNwopdvVksVka5E5zFN8b1YQivF7R6hm11knzogcn5m0kuISvJdjDSxXkhQns1vgQhDZP8oa5s0vXxKvDPyME2dQNm0+2f8njHE= caio.noveli@skf.com'
 # eg:
 # extraSecrets:
 #   '{{ .Release.Name }}-airflow-connections':
@@ -1544,49 +1547,13 @@ dags:
     existingClaim:
   gitSync:
     enabled: true
-
-    # git repo clone url
-    # ssh examples ssh://git@github.com/apache/airflow.git
-    # git@github.com:apache/airflow.git
-    # https example: https://github.com/apache/airflow.git
-    # repo: https://github.com/apache/airflow.git
     repo: ssh://git@github.com/cnovelini/airflow-dags.git
     branch: main
-    rev: HEAD
-    root: "/git"
-    depth: 1
-    # the number of consecutive failures allowed before aborting
-    maxFailures: 0
-    # subpath within the repo where dags are located
-    # should be "" if dags are at repo root
     subPath: ""
-    # if your repo needs a user name password
-    # you can load them to a k8s secret like the one below
-    #   ---
-    #   apiVersion: v1
-    #   kind: Secret
-    #   metadata:
-    #     name: git-credentials
-    #   data:
-    #     GIT_SYNC_USERNAME: <base64_encoded_git_username>
-    #     GIT_SYNC_PASSWORD: <base64_encoded_git_password>
-    # and specify the name of the secret below
-    #
-    # credentialsSecret: git-credentials
-    #
-    #
-    # If you are using an ssh clone url, you can load
-    # the ssh private key to a k8s secret like the one below
-    #   ---
-    #   apiVersion: v1
-    #   kind: Secret
-    #   metadata:
-    #     name: airflow-ssh-secret
-    #   data:
-    #     # key needs to be gitSshKey
-    #     gitSshKey: <base64_encoded_data>
-    # and specify the name of the secret below
-    sshKeySecret: airflow-ssh-git-secret
+    sshKeySecret: airflow-ssh-secret
+
+    
+    # sshKeySecret: airflow-ssh-git-secret
     #
     # If you are using an ssh private key, you can additionally
     # specify the content of your known_hosts file, example:
@@ -1595,18 +1562,18 @@ dags:
     #    <host1>,<ip1> <key1>
     #    <host2>,<ip2> <key2>
     # interval between git sync attempts in seconds
-    wait: 60
-    containerName: git-sync
-    uid: 65533
+    # wait: 60
+    # containerName: git-sync
+    # uid: 65533
 
     # When not set, the values defined in the global securityContext will be used
-    securityContext: {}
+    # securityContext: {}
     #  runAsUser: 65533
     #  runAsGroup: 0
 
-    extraVolumeMounts: []
-    env: []
-    resources: {}
+    # extraVolumeMounts: []
+    # env: []
+    # resources: {}
     #  limits:
     #   cpu: 100m
     #   memory: 128Mi
