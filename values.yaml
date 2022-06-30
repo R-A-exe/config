@@ -1553,6 +1553,7 @@ dags:
     repo: ssh://git@github.com/cnovelini/airflow-dags.git
     branch: main
     rev: HEAD
+    root: "/git"
     depth: 1
     # the number of consecutive failures allowed before aborting
     maxFailures: 0
