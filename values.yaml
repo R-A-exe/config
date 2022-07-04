@@ -1554,8 +1554,6 @@ dags:
     repo: https://github.com/apache/airflow.git
     branch: v1-10-stable
     rev: HEAD
-    root: "/git"
-    dest: "repo"
     depth: 1
     # the number of consecutive failures allowed before aborting
     maxFailures: 0
@@ -1595,7 +1593,4 @@ dags:
     #    <host2>,<ip2> <key2>
     # interval between git sync attempts in seconds
     wait: 60
-    # git sync image details
-    containerRepository: k8s.gcr.io/git-sync
-    containerTag: v3.1.6
-    containerName: git-sync
+   
