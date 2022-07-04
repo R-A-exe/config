@@ -1534,50 +1534,68 @@ podTemplate: ~
 
 # Git sync
 dags:
+  persistence:
+    # Enable persistent volume for storing dags
+    enabled: false
+    # Volume size for dags
+    size: 1Gi
+    # If using a custom storageClass, pass name here
+    storageClassName:
+    # access mode of the persistent volume
+    accessMode: ReadWriteMany
+    ## the name of an existing PVC to use
+    existingClaim: ~
   gitSync:
     enabled: false
-    repo: ssh://git@github.com/cnovelini/airflow-dags.git
-    branch: main
-    subPath: ""
-    sshKeySecret: airflow-ssh-secret
-    knownHosts: |
-      github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDzn/+ml2nEKd/4mydlFBOkHtmKGaWFqMTyfuC+HMXi+M6XZpdEml1v7iJisjV+OkJbOj5x04R2R2z5aQZXR6ww3lE1V3ChRRCJ7bGho4T9ZbgqQVKuSUe1wSm//V6snwzFg/ppaWWJW/1ufr4i0fJhu5QKG0dkFTwhOpYj+jZdQ+2IhHmb4hzw3TBaCxN4JnmxH3HTKbsjNwe/rTy4wn6t/pafQxP/wDHsMLdABLPKsQawHhGtStP+GYv6Hcp+keK67OjDY844fbqx/iB7/NxxBMI7vFqJ4rDF1N68GkDM9lwSptvRCU+oSfPwoFjNvi/K6UgIUkU3wNYAgDHihmjqdMk66E3avWiHgOckMetaYxJJF7ObbAuakDpwcxB5P7vraki9Ds4EmkC4yYcgru0SDspVBKBROyKBL9FhgcxHZKi6Ml9abj4bAuvpDckJK9z4K2CjpXs36u+q+7ppopK0vxb7AbZLP5p495+X0h43Vl84u0VrKcZi09legmbxCd7+lYd56FJF9UlelH6vKuVpPCgD7zOMAJRzO/fBB4UFMhnDuh+/tVaLzrMn9v7fJq2guCEwhlcAJgw/V93N4VpQltXmts+suR39hIG4+wgZAi2YyH7rl2qr5EDaf6dPqphgOa1F71PMJE7LeH44Vmm+8WLQgWj67IFF/V4EIJWs9Q==
-    
-    # sshKeySecret: airflow-ssh-git-secret
+    # git repo clone url
+    # ssh examples ssh://git@github.com/apache/airflow.git
+    # git@github.com:apache/airflow.git
+    # https example: https://github.com/apache/airflow.git
+    repo: https://github.com/apache/airflow.git
+    branch: v1-10-stable
+    rev: HEAD
+    root: "/git"
+    dest: "repo"
+    depth: 1
+    # the number of consecutive failures allowed before aborting
+    maxFailures: 0
+    # subpath within the repo where dags are located
+    # should be "" if dags are at repo root
+    subPath: "tests/dags"
+    # if your repo needs a user name password
+    # you can load them to a k8s secret like the one below
+    #   ---
+    #   apiVersion: v1
+    #   kind: Secret
+    #   metadata:
+    #     name: git-credentials
+    #   data:
+    #     GIT_SYNC_USERNAME: <base64_encoded_git_username>
+    #     GIT_SYNC_PASSWORD: <base64_encoded_git_password>
+    # and specify the name of the secret below
+    #credentialsSecret: git-credentials
     #
+    #
+    # If you are using an ssh clone url, you can load
+    # the ssh private key to a k8s secret like the one below
+    #   ---
+    #   apiVersion: v1
+    #   kind: Secret
+    #   metadata:
+    #     name: airflow-ssh-secret
+    #   data:
+    #     # key needs to be gitSshKey
+    #     gitSshKey: <base64_encoded_data>
+    # and specify the name of the secret below
+    #sshKeySecret: airflow-ssh-secret
     # If you are using an ssh private key, you can additionally
     # specify the content of your known_hosts file, example:
-    #
-    # knownHosts: |
+    #knownHosts: |
     #    <host1>,<ip1> <key1>
     #    <host2>,<ip2> <key2>
     # interval between git sync attempts in seconds
-    # wait: 60
-    # containerName: git-sync
-    # uid: 65533
-
-    # When not set, the values defined in the global securityContext will be used
-    # securityContext: {}
-    #  runAsUser: 65533
-    #  runAsGroup: 0
-
-    # extraVolumeMounts: []
-    # env: []
-    # resources: {}
-    #  limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    #  requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-
-logs:
-  persistence:
-    # Enable persistent volume for storing logs
-    enabled: false
-    # Volume size for logs
-    size: 100Gi
-    # If using a custom storageClass, pass name here
-    storageClassName:
-    ## the name of an existing PVC to use
-    existingClaim:
+    wait: 60
+    # git sync image details
+    containerRepository: k8s.gcr.io/git-sync
+    containerTag: v3.1.6
+    containerName: git-sync
