@@ -260,10 +260,7 @@ enableBuiltInSecretEnvVars:
 #    * key (can be templated) is the name of the secret that will be created
 #    * value: an object with the standard 'data' or 'stringData' key (or both).
 #          The value associated with those keys must be a string (can be templated)
-extraSecrets:
-  airflow-ssh-secret:
-    data: |
-      gitSshKey: 'AAB3NzaC1yc2EAAAADAQABAAABgQC5vA0Jg2g5ZAYqz55RFBr0cA8MDE7lRVEN8rRy3wqH17nkNCur8/LNw7oT/o+MA6ldEJkwOqS0VK3FBbicwsna1NUDz1yzaHBeQchC1+L7y7q5R2qEjxmccNS2/w8Y/vZ7Ulo4jJCQ9KRUf9xdsqwSm0XAec2YcZtMG5BC6QF8/RgO27bAcCQH6x2CcfSCJeYKlrUrNjV2UGX8FT+igK6KU3ZKjLQLwq2ozdMxmmMtc1Ld9Fpho8QSjUof9dh0vzlVg4aRaWatCkcowt4vYe7MPUn4w2lqe0IAoFr/kh8V0js/cEHjEZ4sM4TvJBO1xYQk0JU6LRu4fG/HKdxb4M9IkIgiut3tTBkWp0JH09Rzn9d6Rlxv/4r/pGnBShiWJ2SkK7ROyPE+oASFUQXZd7Sc9MC0eE4OnNwopdvVksVka5E5zFN8b1YQivF7R6hm11knzogcn5m0kuISvJdjDSxXkhQns1vgQhDZP8oa5s0vXxKvDPyME2dQNm0+2f8njHE='
+
 # eg:
 # extraSecrets:
 #   '{{ .Release.Name }}-airflow-connections':
@@ -1547,10 +1544,15 @@ dags:
     existingClaim:
   gitSync:
     enabled: true
-    repo: ssh://git@github.com/cnovelini/airflow-dags.git
+    repo: git@github.com/cnovelini/airflow-dags.git
     branch: main
-    subPath: ""
-    sshKeySecret: airflow-ssh-secret
+    revision: "HEAD"
+    syncWait: 60
+    # sshKeySecret: airflow-ssh-secret
+    sshSecret: "airflow-ssh-git-secret"
+    sshSecretKey: "gitSshKey"
+    sshKnownHosts: |-
+      github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC9TvbwoSX2ep+ZiGb75jPs1NuOIUKyDE9ELue7AJWHP1mJ9I+13F5O3fzgbJp4nbcLdiQ/F7Jp3HlMhYGTRKSWwSV/wMtPPp8kvnWBcR3BCwyW8+AD3jCF4vhCFDCNIhADgBvXahB5uLRNWIFv2B/c3QW6dijhfIW+EiroepvfKYOl2zG4wp/0Zxl44CjRXfvQkRmGbKaOEQEjAUK1OAOe16gyLiohoTlWv1P9NqcCOJF49COAQnXUVFxknzoTzmSZA+UI/VUMm6tp4AG5jOpf70XOVoTb5X6cXs0JMlS4w+zc1Q20dBV5/2dhg5SEiK5Sa/D9nDUrZcNO0Qamzi9M5GT3Ei/Dc8gcjozUAEsQLmazG3/sZERD7p94HLzBrMMvjG2XydS/o34WjaG9fNKKxljSsIojNKzBHMgfMyuBSM/+3sLWgcDMT7+0R5GVWg83+w+A306d4H8j0JBI+GN9we0CTHZU7/tj0KQOR5t8Zt51WnB1wY1w+NyxnBlRq2c=
 
     
     # sshKeySecret: airflow-ssh-git-secret
