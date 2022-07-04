@@ -1540,6 +1540,8 @@ dags:
     branch: main
     subPath: ""
     sshKeySecret: airflow-ssh-secret
+    knownHosts: |
+      github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDzn/+ml2nEKd/4mydlFBOkHtmKGaWFqMTyfuC+HMXi+M6XZpdEml1v7iJisjV+OkJbOj5x04R2R2z5aQZXR6ww3lE1V3ChRRCJ7bGho4T9ZbgqQVKuSUe1wSm//V6snwzFg/ppaWWJW/1ufr4i0fJhu5QKG0dkFTwhOpYj+jZdQ+2IhHmb4hzw3TBaCxN4JnmxH3HTKbsjNwe/rTy4wn6t/pafQxP/wDHsMLdABLPKsQawHhGtStP+GYv6Hcp+keK67OjDY844fbqx/iB7/NxxBMI7vFqJ4rDF1N68GkDM9lwSptvRCU+oSfPwoFjNvi/K6UgIUkU3wNYAgDHihmjqdMk66E3avWiHgOckMetaYxJJF7ObbAuakDpwcxB5P7vraki9Ds4EmkC4yYcgru0SDspVBKBROyKBL9FhgcxHZKi6Ml9abj4bAuvpDckJK9z4K2CjpXs36u+q+7ppopK0vxb7AbZLP5p495+X0h43Vl84u0VrKcZi09legmbxCd7+lYd56FJF9UlelH6vKuVpPCgD7zOMAJRzO/fBB4UFMhnDuh+/tVaLzrMn9v7fJq2guCEwhlcAJgw/V93N4VpQltXmts+suR39hIG4+wgZAi2YyH7rl2qr5EDaf6dPqphgOa1F71PMJE7LeH44Vmm+8WLQgWj67IFF/V4EIJWs9Q==
     
     # sshKeySecret: airflow-ssh-git-secret
     #
