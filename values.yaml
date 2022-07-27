@@ -306,9 +306,9 @@ extraEnv: |
 # eg:
 extraEnvFrom: |
   - secretRef:
-      name: airflow-airflow-metadata
+      name: 'airflow-airflow-metadata'
   - configMapRef:
-      name: testing-var
+      name: 'testing-var'
 
 # Airflow database & redis config
 data:
