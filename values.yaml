@@ -302,13 +302,13 @@ extraEnv: |
 
 # Extra envFrom 'items' that will be added to the definition of airflow containers
 # A string is expected (can be templated).
-extraEnvFrom: ~
+# extraEnvFrom: ~
 # eg:
-# extraEnvFrom: |
-#   - secretRef:
-#       name: '{{ .Release.Name }}-airflow-connections'
-#   - configMapRef:
-#       name: '{{ .Release.Name }}-airflow-variables'
+extraEnvFrom: |
+  - secretRef:
+      name: airflow-airflow-metadata
+  - configMapRef:
+      name: testing-var
 
 # Airflow database & redis config
 data:
