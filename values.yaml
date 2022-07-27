@@ -1549,9 +1549,11 @@ dags:
     enabled: true
     # git repo clone url
     # ssh examples ssh://git@github.com/apache/airflow.git
+   
     # git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    repo: https://github.com/cnovelini/airflow-dags
+    # repo: https://github.com/cnovelini/airflow-dags
+    repo: ssh://git@github.com:cnovelini/airflow-dags.git
     branch: main
     rev: HEAD
     depth: 1
@@ -1577,15 +1579,15 @@ dags:
     # If you are using an ssh clone url, you can load
     # the ssh private key to a k8s secret like the one below
     #   ---
-    #   apiVersion: v1
-    #   kind: Secret
-    #   metadata:
-    #     name: airflow-ssh-secret
-    #   data:
-    #     # key needs to be gitSshKey
-    #     gitSshKey: <base64_encoded_data>
+      # apiVersion: v1
+      # kind: Secret
+      # metadata:
+      #   name: airflow-ssh-secret
+      # data:
+      #   # key needs to be gitSshKey
+      #   gitSshKey: <base64_encoded_data>
     # and specify the name of the secret below
-    #sshKeySecret: airflow-ssh-secret
+    sshKeySecret: airflow-ssh-secret
     # If you are using an ssh private key, you can additionally
     # specify the content of your known_hosts file, example:
     #knownHosts: |
