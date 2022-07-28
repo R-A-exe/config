@@ -304,11 +304,13 @@ extraEnv: |
 # A string is expected (can be templated).
 # extraEnvFrom: ~
 # eg:
+
 extraEnvFrom: |
   - secretRef:
-      name: airflow-airflow-metadata
+      name: odw-airflow
   - configMapRef:
-      name: testing-var
+      name: commom-hosts
+
 
 # Airflow database & redis config
 data:
