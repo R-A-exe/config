@@ -314,6 +314,10 @@ extraEnv: |
 extraEnvFrom: |
   - secretRef:
       name: odw-airflow
+  - secretRef:
+      name: import-financial-razac-data
+  - secretRef:
+      name: stage-airflow
   - configMapRef:
       name: commom-hosts
 
