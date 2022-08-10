@@ -326,7 +326,7 @@ extraEnvFrom: |
 data:
   # If secret names are provided, use those secrets
   metadataSecretName: airflow-metadata-db
-  resultBackendSecretName: ~
+  resultBackendSecretName: airflow-metadatabackend
   brokerUrlSecretName: ~
 
   # Otherwise pass connection values in
