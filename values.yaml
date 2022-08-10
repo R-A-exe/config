@@ -325,7 +325,7 @@ extraEnvFrom: |
 # Airflow database & redis config
 data:
   # If secret names are provided, use those secrets
-  metadataSecretName: ~
+  metadataSecretName: airflow-metadata-db
   resultBackendSecretName: ~
   brokerUrlSecretName: ~
 
@@ -1446,7 +1446,7 @@ cleanup:
 # Configuration for postgresql subchart
 # Not recommended for production
 postgresql:
-  enabled: true
+  enabled: false
   postgresqlPassword: postgres
   postgresqlUsername: postgres
 
