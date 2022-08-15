@@ -317,10 +317,13 @@ extraEnvFrom: |
   - secretRef:
       name: import-financial-razac-data
   - secretRef:
+      name: email-config
+  - secretRef:
       name: stage-airflow
   - configMapRef:
       name: commom-hosts
-
+  - configMapRef:
+      name: email-config
 
 # Airflow database & redis config
 data:
