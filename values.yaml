@@ -124,7 +124,7 @@ ingress:
     pathType: "Prefix"
 
     # The hostname for the web Ingress (Deprecated - renamed to `ingress.web.hosts`)
-    host: "http://internal-k8s-airflow-airflowa-984acb155f-1993809042.us-east-1.elb.amazonaws.com"
+    host: ""
 
     # The hostnames or hosts configuration for the web Ingress
     hosts: []
