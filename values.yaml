@@ -43,10 +43,10 @@ securityContext: {}
 airflowHome: /opt/airflow
 
 # Default airflow repository -- overrides all the specific images below
-defaultAirflowRepository: 859821442994.dkr.ecr.us-east-1.amazonaws.com/airflow-image
+defaultAirflowRepository: 533657977758.dkr.ecr.us-east-1.amazonaws.com/airflow-image
 
 # Default airflow tag to deploy
-defaultAirflowTag: "2.3.2"
+defaultAirflowTag: "2.3.2-developer"
 
 # Airflow version (Used to make some decisions based on Airflow Version being deployed)
 airflowVersion: "2.3.2"
@@ -109,19 +109,13 @@ ingress:
   # Configs for the Ingress of the web Service
   web:
     # Annotations for the web Ingress
-    annotations: 
-      kubernetes.io/ingress.class: alb
-      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:859821442994:certificate/3f8eb642-6713-46f5-bbb2-6cb95d8b9c73
-      alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-      alb.ingress.kubernetes.io/scheme: internal
-      alb.ingress.kubernetes.io/target-type: ip
+    annotations: {}
 
     # The path for the web Ingress
     path: "/"
 
     # The pathType for the above path (used only with Kubernetes v1.19 and above)
-    pathType: "Prefix"
+    pathType: "ImplementationSpecific"
 
     # The hostname for the web Ingress (Deprecated - renamed to `ingress.web.hosts`)
     host: ""
@@ -203,7 +197,6 @@ airflowLocalSettings: |-
   {{- if semverCompare ">=2.2.0" .Values.airflowVersion }}
   {{- if not (or .Values.webserverSecretKey .Values.webserverSecretKeySecretName) }}
   from airflow.www.utils import UIAlert
-
   DASHBOARD_UIALERTS = [
     UIAlert(
       'Usage of a dynamic webserver secret key detected. We recommend a static webserver secret key instead.'
@@ -217,7 +210,6 @@ airflowLocalSettings: |-
   ]
   {{- end }}
   {{- end }}
-
 # Enable RBAC (default on most clusters these days)
 rbac:
   # Specifies whether RBAC resources should be created
@@ -304,27 +296,37 @@ extraConfigMaps: {}
 # eg:
 extraEnv: |
   - name: AIRFLOW__CORE__LOAD_EXAMPLES
-    value: 'False'
-
+    value: 'True'
 # Extra envFrom 'items' that will be added to the definition of airflow containers
 # A string is expected (can be templated).
-# extraEnvFrom: ~
+extraEnvFrom: ~
 # eg:
 
-extraEnvFrom: |
-  - secretRef:
-      name: odw-airflow
-  - secretRef:
-      name: import-financial-razac-data
-  - secretRef:
-      name: email-config
-  - secretRef:
-      name: stage-airflow
-  - configMapRef:
-      name: commom-hosts
-  - configMapRef:
-      name: email-config
-
+# extraEnvFrom: |
+#   - secretRef:
+#       name: odw-airflow
+#   - secretRef:
+#       name: aws-iam-usr-import-financial-razac-data
+#   - secretRef:
+#       name: email-config
+#   - secretRef:
+#       name: ar-back-order
+#   - secretRef:
+#       name: as400-data
+#   - secretRef:
+#       name: azpartes-airflow
+#   - secretRef:
+#       name: aws-iam-usr-azpartes-data
+#   - secretRef:
+#       name: as400-skfarg01-rr35182
+#   - secretRef:
+#       name: stage-airflow
+#   - configMapRef:
+#       name: commom-hosts
+#   - configMapRef:
+#       name: commom-config
+#   - configMapRef:
+#       name: email-config
 # Airflow database & redis config
 data:
   # If secret names are provided, use those secrets
@@ -403,28 +405,24 @@ kerberos:
     # order to make it production-ready you must replace it with your own configuration that
     # Matches your kerberos deployment. Administrators of your Kerberos instance should
     # provide the right configuration.
-
     [logging]
     default = "FILE:{{ template "airflow_logs_no_quote" . }}/kerberos_libs.log"
     kdc = "FILE:{{ template "airflow_logs_no_quote" . }}/kerberos_kdc.log"
     admin_server = "FILE:{{ template "airflow_logs_no_quote" . }}/kadmind.log"
-
     [libdefaults]
     default_realm = FOO.COM
     ticket_lifetime = 10h
     renew_lifetime = 7d
     forwardable = true
-
     [realms]
     FOO.COM = {
       kdc = kdc-server.foo.com
       admin_server = admin_server.foo.com
     }
-
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 1
+  replicas: 2
 
   # Command to use when running Airflow workers (templated).
   command: ~
@@ -436,7 +434,6 @@ workers:
     - |-
       exec \
       airflow {{ semverCompare ">=2.0.0" .Values.airflowVersion | ternary "celery worker" "worker" }}
-
   # Update Strategy when worker is deployed as a StatefulSet
   updateStrategy: ~
   # Update Strategy when worker is deployed as a Deployment
@@ -597,7 +594,6 @@ scheduler:
             job = session.query(SchedulerJob).filter_by(hostname=get_hostname()).order_by(
                 SchedulerJob.latest_heartbeat.desc()).limit(1).first()
         sys.exit(0 if job.is_alive() else 1)"
-
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
   replicas: 1
@@ -777,7 +773,6 @@ migrateDatabaseJob:
     - |-
       exec \
       airflow {{ semverCompare ">=2.0.0" .Values.airflowVersion | ternary "db upgrade" "upgradedb" }}
-
   # Annotations on the database migration pod
   annotations: {}
   # jobAnnotations are annotations on the database migration job
@@ -986,19 +981,15 @@ triggerer:
         import os
         os.environ['AIRFLOW__CORE__LOGGING_LEVEL'] = 'ERROR'
         os.environ['AIRFLOW__LOGGING__LOGGING_LEVEL'] = 'ERROR'
-
         from airflow.jobs.triggerer_job import TriggererJob
         from airflow.utils.db import create_session
         from airflow.utils.net import get_hostname
         import sys
-
         with create_session() as session:
             job = session.query(TriggererJob).filter_by(hostname=get_hostname()).order_by(
                 TriggererJob.latest_heartbeat.desc()).limit(1).first()
-
         sys.exit(0 if job.is_alive() else 1)
         "
-
   # Create ServiceAccount
   serviceAccount:
     # Specifies whether a ServiceAccount should be created
@@ -1064,6 +1055,7 @@ flower:
   # If True, and using CeleryExecutor/CeleryKubernetesExecutor, will deploy flower app.
   enabled: true
 
+
   # Command to use when running flower (templated).
   command: ~
   # Args to use when running flower (templated).
@@ -1074,7 +1066,6 @@ flower:
     - |-
       exec \
       airflow {{ semverCompare ">=2.0.0" .Values.airflowVersion | ternary "celery flower" "flower" }}
-
   # Additional network policies as needed (Deprecated - renamed to `flower.networkPolicy.ingress.from`)
   extraNetworkPolicies: []
   networkPolicy:
@@ -1509,7 +1500,7 @@ config:
   celery_kubernetes_executor:
     kubernetes_queue: 'kubernetes'
   smtp:
-    smtp_user: 'AKIAUVQUMD6BHD567PPJ'
+    smtp_user: ''
   kubernetes:
     namespace: '{{ .Release.Namespace }}'
     airflow_configmap: '{{ include "airflow_config" . }}'
@@ -1569,9 +1560,7 @@ dags:
    
     # git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    # repo: https://github.com/cnovelini/airflow-dags
-    repo: https://github.com/SKF-LAM/airflow-dags
-    # repo: ssh://git@github.com/cnovelini/airflow-dags.git
+    repo: https://github.com/C9Apps/airflow-dags
     branch: developer
     rev: HEAD
     depth: 1
@@ -1591,7 +1580,7 @@ dags:
     #     GIT_SYNC_USERNAME: <base64_encoded_git_username>
     #     GIT_SYNC_PASSWORD: <base64_encoded_git_password>
     # and specify the name of the secret below
-    credentialsSecret: git-credentials
+    credentialsSecret: github-c9apps-service-user
     #
     #
     # If you are using an ssh clone url, you can load
